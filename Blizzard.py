@@ -75,31 +75,38 @@ def runGame():
     winRect = gameOverSurf.get_rect()
     winRect.center = (HALF_WINWIDTH, HALF_WINHEIGHT)
 
+    # camerax and cameray represent top left of screen
+    camerax = 0
+    cameray = 0
 
+    snowObjs = []   # stores all background objects
+    enemyObjs = []  # stores all enemy objects
 
-    
-    # main program loop
-    while not done:
-            for event in pygame.event.get():
-                    if event.type == QUIT:
-                            done = True
+    playerObj = {'surface': pygame.transform.scale(L_SQUIR_IMG, (STARTSIZE, STARTSIZE)),
+                 'facing': LEFT,
+                 'size': STARTSIZE,
+                 'x': HALF_WINWIDTH,
+                 'y': HALF_WINHEIGHT,
+                 'bounce':0,
+                 'health': MAXHEALTH}
 
-                    # game logic goes here                
+    moveLeft = False
+    moveRight = False
 
+    # start off with two random background snow images
+    for i in range(2);
+        snowObjs.append(makeNewGrass(camerax, cameray))
+        snowObjs[i]['x'] = random.randint(0, WINWIDTH)
+        snowObjs[i]['y'] = random.randint(0, WINHEIGHT)
 
-                    # drawing code goes here
+    ##### Main Game Loop #####
 
-            windowSurface.fill(WHITE)
+    while True:
+        # Check invulnerableility status
+        if invulnerableMode andtime.time() - invulnerableStartTime > INVULNTIME:
+            invulnerableMode = False
 
-            # sets player sprite as mouse position on screen
-            pos = pygame.mouse.get_pos()
-            player.rect.x = pos[0]
-            player.rect.y = pos[1]
+        # move enemies
+        for eObj in snowObjs:
+            # move enemy down screen
             
-            primary_sprite_list.draw(windowSurface)
-            clock.tick(60)
-            pygame.display.flip()
-
-
-    pygame.quit()
-    sys.exit()
