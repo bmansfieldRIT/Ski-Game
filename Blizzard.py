@@ -1,7 +1,7 @@
 """	File: Blizzard.py
 	Author: Brian Mansfield
 	This file is the game loop, the main logic of the game and
-	object interactions goes here.
+	object interactions go here.
 """
 
 import pygame, sys, time, math, random
@@ -13,100 +13,136 @@ from pygame.locals import *
 FPS = 30
 WINWIDTH = 640
 WINHEIGHT = 480
-WHITE = (255, 255, 255)
-SNOWBACKGROUND = (255, 255, 255)
+HALF_WINWIDTH = int(WINWIDTH / 2)
+HALF_WINHEIGHT = int(WINHEIGHT / 2)
+
+PLAYERIMAGE = '../images/skiman.bmp' # relative path from working directory
+RAILIMAGE = '../images/rail.bmp'
+
+SNOWBACKGROUND = (255, 255, 255) # white
 BLUE = (0, 0, 255)
+PLAYERSIZE = 50
 
 # Game Constants
-ENEMYMOVERATE = 9
-INVULNTIME = 2      # how long after being hit
-GAMEOVERTIME = 4    # how long the game over screen lasts
-HEALTHSTART = 3
-MAXENEMIES = 4
-STARTSCREENTIME = 3
-DAYLIGHT = 1
-NIGHT = 0
-LEFT = 'left'
-RIGHT = 'right'
+STARTSCREENTIME = 3 # how long the start screen lasts
 
-class Player(pygame.sprite.Sprite):
+# X Locations for the Players and Enemies
+RAIL = (WINWIDTH) / 4 # sub 25 from each side, divide into 3 rails
+LEFT_RAIL = RAIL * 1
+CENTER_RAIL = RAIL * 2
+RIGHT_RAIL = RAIL * 3
 
-    def __init__(self, width, height):
-        """ Constructor for Player. Passes starting x and y pos."""
-        
-        pygame.sprite.Sprite.__init__(self)
+RAILWIDTH = 10
+RAILHEIGHT = 480
 
-        self.image = pygame.image.load('skiman.png')
-        self.rect = self.image.get_rect()
+PLAYERSTARTY = WINHEIGHT - PLAYERSIZE # location up the screen the player obj starts at
 
 def main():
-    global FPSCLOCK, DISPLAYSURF, BASICFONT, PLAYER_IMG
+    global FPSCLOCK, DISPLAYSURF, PLAYER_IMG, RAIL_IMG
 
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
-    pygame.display.set_icon(pygame.image.load('player.png'))
+    
     DISPLAYSURF = pygame.display.set_mode((WINWIDTH, WINHEIGHT))
     pygame.display.set_caption('BLIZZARD!')
-    BASICFONT = pygame.font.Font('freesansbold.ttf', 32)
-
-    # load the image files
-    PLAYER_IMG = pygame.image.load('player.png')
-    DRIFTMARKS = []
     
-    # for i in range(1,2):
-    #   DRIFTMARKS.append(pygame.image.load('swoosh%s.png', % i))   
-
+    # load the image files
+    PLAYER_IMG = pygame.image.load(PLAYERIMAGE)
+    RAIL_IMG = pygame.display.load(RAILIMAGE)
+    
     while True:
         runGame()
 
 def runGame():
-    # set up variables for the start of a new game
-    invulnerableMode        = False # if the player is invulnerable
-    invulnerableStartTime   = 0     # time the player became invulnerable
-    gameOverMode            = False # if the player has lost
-    gameOverStartTime       = 0     # time the player lost
 
-    # create the surfaces to hold game text
-    gameOverSurf = BASICFONT.render('Game Over', True, WHITE)
-    GameOverRect = gameOverSurf.get_rect()
-    gameOverRect.center = (HALF_WINWIDTH, HALF_WINHEIGHT)
+    # Initialize all data structs
+    playerObj = {'surface': pygame.transform.scale(PLAYER_IMG,
+                                                    (PLAYERSIZE, PLAYERSIZE)),
+        'x' : CENTER_RAIL,
+        'y' : PLAYERSTARTY,
+        'size' : PLAYERSIZE }
+    
+    railPositions = []
+    railPositions.append(LEFT_RAIL)
+    railPositions.append(CENTER_RAIL)
+    railPositions.append(RIGHT_RAIL)
+    
+    railImages = []
+    for i in range(3):
+        railImages.append(RAIL_IMG)
 
-    winSurf = BASICFONT.render('(Press "r" to restart', True, WHITE)
-    winRect = gameOverSurf.get_rect()
-    winRect.center = (HALF_WINWIDTH, HALF_WINHEIGHT)
+    railObjs = []
+    for i in range(3):
+        rail = createNewRail(i)
+        railObjs.append(rail)        
 
-    # camerax and cameray represent top left of screen
-    camerax = 0
-    cameray = 0
-
-    snowObjs = []   # stores all background objects
-    enemyObjs = []  # stores all enemy objects
-
-    playerObj = {'surface': pygame.transform.scale(L_SQUIR_IMG, (STARTSIZE, STARTSIZE)),
-                 'facing': LEFT,
-                 'size': STARTSIZE,
-                 'x': HALF_WINWIDTH,
-                 'y': HALF_WINHEIGHT,
-                 'bounce':0,
-                 'health': MAXHEALTH}
-
+    # Initialize player movement vars used in main game loop
     moveLeft = False
     moveRight = False
-
-    # start off with two random background snow images
-    for i in range(2);
-        snowObjs.append(makeNewGrass(camerax, cameray))
-        snowObjs[i]['x'] = random.randint(0, WINWIDTH)
-        snowObjs[i]['y'] = random.randint(0, WINHEIGHT)
-
+        
     ##### Main Game Loop #####
 
     while True:
-        # Check invulnerableility status
-        if invulnerableMode andtime.time() - invulnerableStartTime > INVULNTIME:
-            invulnerableMode = False
 
-        # move enemies
-        for eObj in snowObjs:
-            # move enemy down screen
-            
+        # fill white background
+        DISPLAYSURF.fill(SNOWBACKGROUND)
+
+        # display player object
+        playerObj['rect'] = pygame.Rect( (playerObj['x'],
+                                        playerObj['y'],
+                                        playerObj['size'],
+                                        playerObj['size']) )
+        DISPLAYSURF.blit(playerObj['surface'], playerObj['rect'])
+
+        # display rails
+        for rail in railObjs:
+            DISPLAYSURF.blit(rail['railImage'], rail['rect'])
+
+        # event handling loop
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                terminate()
+
+            # determine direction pressed by user
+            elif event.type == KEYDOWN:
+                if event.key in (K_LEFT, K_a):
+                    if playerObj['x'] != LEFT_RAIL:
+                        moveLeft = True
+                        moveRight = False
+                    else:
+                        moveLeft = False
+                        moveRight = False
+                elif event.key in (K_RIGHT, K_d):
+                    if playerObj['x'] != RIGHT_RAIL:
+                        moveLeft = False
+                        moveRight = True
+                    else:
+                        moveLeft = False
+                        moveRight = False
+
+                # move player one rail over in direction of keypress
+                if moveLeft:
+                    playerObj['x'] -= RAIL
+                if moveRight:
+                    playerObj['x'] += RAIL
+
+            pygame.display.update()
+            FPSCLOCK.tick(FPS)
+
+def terminate():
+    pygame.quit()
+    sys.exit()
+
+def createNewRail(i):
+    newrail = {}
+    newrail['railImage'] = railImages[i]
+    newrail['width'] = RAILWIDTH
+    newrail['height'] = RAILHEIGHT
+    newrail['x'] = railImages[i]
+    newrail['y'] = 0
+    newrail['rect'] = pygame.Rect( (ra['x'], ra['y'],
+                               ra['width'], ra['height']) )
+    return newrail
+    
+if __name__ == '__main__':
+    main()
