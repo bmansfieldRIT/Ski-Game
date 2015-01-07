@@ -18,6 +18,7 @@ HALF_WINHEIGHT = int(WINHEIGHT / 2)
 
 PLAYERIMAGE = '../images/skiman.bmp' # relative path from working directory
 RAILIMAGE = '../images/rail.bmp'
+RAILIMAGES = '../images/rail%s.bmp'
 
 SNOWBACKGROUND = (255, 255, 255) # white
 BLUE = (0, 0, 255)
@@ -34,6 +35,7 @@ RIGHT_RAIL = RAIL * 3
 
 RAILWIDTH = 10
 RAILHEIGHT = 480
+RAILTICK = FPS/10 # rail moves 10 times every second 
 
 PLAYERSTARTY = WINHEIGHT - PLAYERSIZE # location up the screen the player obj starts at
 
@@ -48,13 +50,15 @@ def main():
     
     # load the image files
     PLAYER_IMG = pygame.image.load(PLAYERIMAGE)
-    RAIL_IMG = pygame.display.load(RAILIMAGE)
+    RAIL_IMG = pygame.image.load(RAILIMAGE)
     
     while True:
         runGame()
 
 def runGame():
 
+    global railImages, railPositions, railnumber
+    
     # Initialize all data structs
     playerObj = {'surface': pygame.transform.scale(PLAYER_IMG,
                                                     (PLAYERSIZE, PLAYERSIZE)),
@@ -70,6 +74,7 @@ def runGame():
     railImages = []
     for i in range(3):
         railImages.append(RAIL_IMG)
+    railnumber = 1
 
     railObjs = []
     for i in range(3):
@@ -82,8 +87,9 @@ def runGame():
         
     ##### Main Game Loop #####
 
+    railtick = 1
+    
     while True:
-
         # fill white background
         DISPLAYSURF.fill(SNOWBACKGROUND)
 
@@ -94,9 +100,17 @@ def runGame():
                                         playerObj['size']) )
         DISPLAYSURF.blit(playerObj['surface'], playerObj['rect'])
 
+        if railtick == RAILTICK:
         # display rails
+            if railnumber == 9:
+                railnumber = 1
+            else:
+                railnumber += 1
+            railtick = 0
+        nextrail = pygame.image.load(RAILIMAGES % railnumber)
+        
         for rail in railObjs:
-            DISPLAYSURF.blit(rail['railImage'], rail['rect'])
+            DISPLAYSURF.blit(nextrail, rail['rect'])
 
         # event handling loop
         for event in pygame.event.get():
@@ -126,22 +140,23 @@ def runGame():
                 if moveRight:
                     playerObj['x'] += RAIL
 
-            pygame.display.update()
-            FPSCLOCK.tick(FPS)
-
+        pygame.display.update()
+        FPSCLOCK.tick(FPS)
+        railtick += 1
+            
 def terminate():
     pygame.quit()
     sys.exit()
 
 def createNewRail(i):
     newrail = {}
-    newrail['railImage'] = railImages[i]
     newrail['width'] = RAILWIDTH
     newrail['height'] = RAILHEIGHT
-    newrail['x'] = railImages[i]
+    newrail['x'] = railPositions[i]
     newrail['y'] = 0
-    newrail['rect'] = pygame.Rect( (ra['x'], ra['y'],
-                               ra['width'], ra['height']) )
+    newrail['rect'] = pygame.Rect( (newrail['x'], newrail['y'],
+                                    newrail['width'], newrail['height']) )
+
     return newrail
     
 if __name__ == '__main__':
