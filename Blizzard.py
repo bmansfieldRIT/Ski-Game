@@ -19,6 +19,9 @@ HALF_WINHEIGHT = int(WINHEIGHT / 2)
 PLAYERIMAGE = '../images/skiman.bmp' # relative path from working directory
 RAILIMAGE = '../images/rail.bmp'
 RAILIMAGES = '../images/rail%s.bmp'
+LTREELINEIMAGE = '../images/lefttreeline1.bmp'
+RTREELINEIMAGE = '../images/righttreeline.bmp'
+TREEOBSTACLEIMAGE = '../images/treeobstacle.bmp'
 
 SNOWBACKGROUND = (255, 255, 255) # white
 BLUE = (0, 0, 255)
@@ -35,12 +38,20 @@ RIGHT_RAIL = RAIL * 3
 
 RAILWIDTH = 10
 RAILHEIGHT = 480
-RAILTICK = FPS/10 # rail moves 10 times every second 
+RAILCHANGE = FPS/10 # rail moves 10 times every second
+OBSTACLECHANGE = FPS/30
+
+TREELINEWIDTH = 50
+TREELINEHEIGHT = WINHEIGHT
+
+TREEHEIGHT = 63
+TREEWIDTH = 43
 
 PLAYERSTARTY = WINHEIGHT - PLAYERSIZE # location up the screen the player obj starts at
 
 def main():
-    global FPSCLOCK, DISPLAYSURF, PLAYER_IMG, RAIL_IMG
+    global FPSCLOCK, DISPLAYSURF, PLAYER_IMG, LTREELINE_IMG, RTREELINE_IMG
+    global RAIL_IMG, TREE_IMG
 
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
@@ -51,21 +62,24 @@ def main():
     # load the image files
     PLAYER_IMG = pygame.image.load(PLAYERIMAGE)
     RAIL_IMG = pygame.image.load(RAILIMAGE)
+    LTREELINE_IMG = pygame.image.load(LTREELINEIMAGE)
+    RTREELINE_IMG = pygame.image.load(RTREELINEIMAGE)
+    TREE_IMG = pygame.image.load(TREEOBSTACLEIMAGE)
     
     while True:
         runGame()
 
 def runGame():
-
     global railImages, railPositions, railnumber
     
     # Initialize all data structs
     playerObj = {'surface': pygame.transform.scale(PLAYER_IMG,
                                                     (PLAYERSIZE, PLAYERSIZE)),
-        'x' : CENTER_RAIL,
+        'x' : CENTER_RAIL + RAILWIDTH,
         'y' : PLAYERSTARTY,
         'size' : PLAYERSIZE }
-    
+
+    # Rails displaying player positions
     railPositions = []
     railPositions.append(LEFT_RAIL)
     railPositions.append(CENTER_RAIL)
@@ -79,8 +93,29 @@ def runGame():
     railObjs = []
     for i in range(3):
         rail = createNewRail(i)
-        railObjs.append(rail)        
+        railObjs.append(rail)
 
+    # Trees alongside the edge of the screen
+    treelineObjs = []
+    ltreeline = createNewTreeline(LTREELINE_IMG, 0)
+    rtreeline = createNewTreeline(RTREELINE_IMG, WINWIDTH - 35) # constant
+                                 # needed to offset from right side of screen
+    treelineObjs.append(ltreeline)
+    treelineObjs.append(rtreeline)        
+
+    numObstacles = 0
+    
+    # Tree obstacle
+    obstacleImages = []
+    for i in range(1):
+        obstacleImages.append(TREE_IMG)
+        numObstacles += 1
+
+    Obstacles = []
+    for i in range(numObstacles):
+        obstacle = createNewObstacle('tree', obstacleImages[i])
+        Obstacles.append(obstacle)
+    
     # Initialize player movement vars used in main game loop
     moveLeft = False
     moveRight = False
@@ -88,10 +123,40 @@ def runGame():
     ##### Main Game Loop #####
 
     railtick = 1
+    obstacletick = 1
     
     while True:
         # fill white background
         DISPLAYSURF.fill(SNOWBACKGROUND)
+
+        for treeline in treelineObjs:
+            DISPLAYSURF.blit(treeline['image'], treeline['rect'])
+
+        for obstacle in Obstacles:
+            if obstacletick == OBSTACLECHANGE:
+                obstacle['y'] += 1
+                obstacle['rect'] = pygame.Rect( (obstacle['x'],
+                                                 obstacle['y'],
+                                                 obstacle['width'],
+                                                 obstacle['height']) )
+            obstacletick = 0
+                
+        if railtick == RAILCHANGE:
+        # determine next rail image to display
+            if railnumber == 9:
+                railnumber = 1
+            else:
+                railnumber += 1
+            railtick = 0
+        # load next rail image
+        nextrail = pygame.image.load(RAILIMAGES % railnumber)
+                
+        # display rail images
+        for rail in railObjs:
+            DISPLAYSURF.blit(nextrail, rail['rect'])
+
+        for obstacle in Obstacles:
+                DISPLAYSURF.blit(obstacle['image'], obstacle['rect'])
 
         # display player object
         playerObj['rect'] = pygame.Rect( (playerObj['x'],
@@ -99,19 +164,7 @@ def runGame():
                                         playerObj['size'],
                                         playerObj['size']) )
         DISPLAYSURF.blit(playerObj['surface'], playerObj['rect'])
-
-        if railtick == RAILTICK:
-        # display rails
-            if railnumber == 9:
-                railnumber = 1
-            else:
-                railnumber += 1
-            railtick = 0
-        nextrail = pygame.image.load(RAILIMAGES % railnumber)
         
-        for rail in railObjs:
-            DISPLAYSURF.blit(nextrail, rail['rect'])
-
         # event handling loop
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -138,11 +191,12 @@ def runGame():
                 if moveLeft:
                     playerObj['x'] -= RAIL
                 if moveRight:
-                    playerObj['x'] += RAIL
-
+                    playerObj['x'] += RAIL            
+                    
         pygame.display.update()
         FPSCLOCK.tick(FPS)
         railtick += 1
+        obstacletick += 1
             
 def terminate():
     pygame.quit()
@@ -156,8 +210,30 @@ def createNewRail(i):
     newrail['y'] = 0
     newrail['rect'] = pygame.Rect( (newrail['x'], newrail['y'],
                                     newrail['width'], newrail['height']) )
-
     return newrail
-    
+
+def createNewTreeline(treeimage, xcoord):
+    newtr = {}
+    newtr['image'] = treeimage
+    newtr['width'] = TREELINEWIDTH
+    newtr['height'] = TREELINEHEIGHT
+    newtr['x'] = xcoord
+    newtr['y'] = 0
+    newtr['rect'] = pygame.Rect( (newtr['x'], newtr['y'],
+                                    newtr['width'], newtr['height']) )
+    return newtr
+
+def createNewObstacle(type, image):
+    if type == 'tree':
+        obstacle = {}
+        obstacle['image'] = image
+        obstacle['width'] = TREEWIDTH
+        obstacle['height'] = TREEHEIGHT
+        obstacle['x'] = CENTER_RAIL + RAILWIDTH
+        obstacle['y'] = 0
+        obstacle['rect'] = pygame.Rect( (obstacle['x'], obstacle['y'],
+                                        obstacle['width'], obstacle['height']) )
+        return obstacle
+
 if __name__ == '__main__':
     main()
