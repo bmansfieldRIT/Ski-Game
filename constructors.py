@@ -10,8 +10,9 @@ from pygame.locals import *
 from window_constants import *
 from game_constants import *
 
-def createNewRail( loc ):
+def createNewRail( loc, image ):
     newrail = {}
+    newrail['image'] = image
     newrail['width'] = RAILWIDTH
     newrail['height'] = RAILHEIGHT
     newrail['x'] = loc
