@@ -41,8 +41,8 @@ def runGame():
                                                 (PLAYERWIDTH, PLAYERHEIGHT)),
         'x' : PLAYERSTARTX,
         'y' : PLAYERSTARTY,
-        'height' : PLAYERHEIGHT,
         'width' : PLAYERWIDTH,
+        'height' : PLAYERHEIGHT,
         'health' : STARTHEALTH }
     
     railImages = []
@@ -51,12 +51,12 @@ def runGame():
     railnumber = 1
 
     rails = []
-    rails.append(createNewRail(LEFT_RAIL))
-    rails.append(createNewRail(CENTER_RAIL))
-    rails.append(createNewRail(RIGHT_RAIL))
+    rails.append(createNewRail(LEFT_RAIL, RAIL_IMG))
+    rails.append(createNewRail(CENTER_RAIL, RAIL_IMG))
+    rails.append(createNewRail(RIGHT_RAIL, RAIL_IMG))
 
     # Trees alongside the edge of the screen
-    treelineS = []
+    treelines = []
     treelines.append(createNewTreeline(LTREELINE_IMG, 0))
     treelines.append(createNewTreeline(RTREELINE_IMG, WINWIDTH - 35))
 
@@ -97,7 +97,7 @@ def runGame():
         for treeline in treelines:
             DISPLAYSURF.blit(treeline['image'], treeline['rect'])
         for rail in rails:
-                DISPLAYSURF.blit(rail['image'], rail['rect'])
+            DISPLAYSURF.blit(rail['image'], rail['rect'])
 
         # Display player UI
         DISPLAYSURF.blit(Hearts[player['health']], pygame.Rect( (HEARTSXOFFSET,
@@ -108,8 +108,12 @@ def runGame():
         for obstacle in Obstacles:
                 DISPLAYSURF.blit(obstacle['image'], obstacle['rect'])
 
+	# Display player object
+        DISPLAYSURF.blit(player['surface'], pygame.Rect( (player['x'], player['y'],
+                                                          player['width'], player['height']) ))
+        
         # Display Game Over screen if condition is reached
-        # CAUTION: MUST ALWAYS  BE LAST SURFACE DISPLAYED
+        # CAUTION:  GAME OVER SCREEN MUST ALWAYS BE LAST SURFACE DISPLAYED
         if player['health'] == 0:
             DISPLAYSURF.blit(gameOverScreen['image'], gameOverScreen['rect'])
             if time.time() - gameOverStartTime > GAMEOVERTIME:
