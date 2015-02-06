@@ -4,7 +4,7 @@
 	object interactions go here.
 """
 
-import pygame, sys, time, math, random
+import pygame, sys, getopt, time, math, random
 from pygame.locals import *
 from window_constants import *
 from game_constants import *
@@ -21,6 +21,8 @@ def main():
     while True:
         runGame()
 
+    DEBUG = false # change this variable to initialize debug mode
+
 def runGame():
     global railImages, railPositions, railnumber
     
@@ -30,11 +32,13 @@ def runGame():
     LTREELINE_IMG = pygame.image.load(LTREELINEIMAGE)
     RTREELINE_IMG = pygame.image.load(RTREELINEIMAGE)
     TREE_IMG = pygame.image.load(TREEOBSTACLEIMAGE)
+    SNOWPILE_IMG = pygame.image.load(SNOWPILEOBSTACLEIMAGE)
     ZEROHEARTS_IMG = pygame.image.load(ZEROHEARTSIMAGE)
     ONEHEART_IMG = pygame.image.load(ONEHEARTIMAGE)
     TWOHEARTS_IMG = pygame.image.load(TWOHEARTSIMAGE)
     THREEHEARTS_IMG = pygame.image.load(THREEHEARTSIMAGE)
     GAMEOVER_IMG = pygame.image.load(GAMEOVERIMAGE)
+    
     
     # Initialize all data structs
     player = {'surface': pygame.transform.scale(PLAYER_IMG,
@@ -64,13 +68,16 @@ def runGame():
     # Create Game Over Screen
     gameOverScreen = createGameOverScreen(GAMEOVER_IMG)
     
-    # Createstructure to hold types of obstacles
+    # Create structure to hold types of obstacles
     Obstacles = []
     Obstacles.append("") # indexing for this structure starts at 1
     treeobj = { 'type' : 'tree',
                 'image' : TREE_IMG}
     Obstacles.append(treeobj)
-    numObstacles = 1
+    snowpileobj = { 'type' : 'snow pile',
+                    'image' : SNOWPILE_IMG}
+    Obstacles.append(snowpileobj)
+    numObstacles = 2
 
     # Structure to hold the current obstacles on the field
     obstaclesOnField = []
@@ -148,13 +155,12 @@ def runGame():
             for rail in rails:
                 rail['image'] = pygame.image.load(RAILIMAGES % railnumber)
 
-	# Delete obstacles off the screen
+        # Delete obstacles off the screen
         i = 0
         for obst in obstaclesOnField:
             if obst['y'] > WINHEIGHT:
                 obstaclesOnField.pop(i)
                 numObstaclesOnField -= 1
-            print obst['y']
             i += 1
                 
         # Generate new obstacle
