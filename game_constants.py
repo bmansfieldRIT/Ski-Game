@@ -7,14 +7,14 @@ the main game window are held in blizzard.py, the main module
 
 from window_constants import *
 
-"""
-These constants represent the relative path of the
-images from the working directory.
-"""
 # Color constants
 SNOWBACKGROUND = (255, 255, 255) # white
 BLUE = (0, 0, 255)
 
+"""
+These constants represent the relative path of the
+images from the working directory.
+"""
 # The player image
 PLAYERIMAGE = '../images/skiman.bmp'
 
@@ -46,6 +46,9 @@ RAILHEIGHT = 480
 TREELINEWIDTH = 50
 TREELINEHEIGHT = WINHEIGHT
 
+# Game Over Time
+GAMEOVERTIME = 6
+
 # Dimensions of the player UI
 HEARTSHEIGHT = 25
 HEARTSWIDTH = 83
@@ -63,6 +66,11 @@ LEFT_RAIL = RAIL * 1
 CENTER_RAIL = RAIL * 2
 RIGHT_RAIL = RAIL * 3
 
+RAILLOCATIONS = []
+RAILLOCATIONS.append(LEFT_RAIL)
+RAILLOCATIONS.append(CENTER_RAIL)
+RAILLOCATIONS.append(RIGHT_RAIL)
+
 # Location to place the player object
 PLAYERSTARTX = CENTER_RAIL + RAILWIDTH
 PLAYERSTARTY = WINHEIGHT - PLAYERHEIGHT
@@ -74,3 +82,10 @@ HEARTSYOFFSET = WINHEIGHT - HEARTSHEIGHT - 20
 # Rate of change for animations
 RAILCHANGE = FPS/30 # rail moves 10 times every second
 OBSTACLECHANGE = FPS/30
+
+# Boundary values for random obstacle generation
+MIN_OBST_GEN_TIME = FPS/5
+MAX_OBST_GEN_TIME = FPS * 5
+
+# Max number of obstacles on field
+MAX_OBST_ON_FIELD = 10
