@@ -54,4 +54,17 @@ def createNewObstacle( type, image ):
         obstacle['y'] = 0 - TREEHEIGHT
         obstacle['rect'] = pygame.Rect( (obstacle['x'], obstacle['y'],
                                          obstacle['width'], obstacle['height']) )
+
+    elif type == 'snow pile':
+        obstacle = {}
+        obstacle['image'] = image
+        obstacle['width'] = SNOWPILEWIDTH
+        obstacle['height'] = SNOWPILEHEIGHT
+        loc = random.randint(0,2)
+        obstacle['x'] = RAILLOCATIONS[loc] + RAILWIDTH
+        obstacle['y'] = 0 - SNOWPILEHEIGHT
+        obstacle['rect'] = pygame.Rect( (obstacle['x'], obstacle['y'],
+                                         obstacle['width'], obstacle['height']) )
+        print 'snow'
+    
     return obstacle
