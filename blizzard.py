@@ -49,7 +49,8 @@ def runGame():
     for i in range(3):
         railImages.append(RAIL_IMG)
     railnumber = 1
-
+    
+    
     rails = []
     rails.append(createNewRail(LEFT_RAIL, RAIL_IMG))
     rails.append(createNewRail(CENTER_RAIL, RAIL_IMG))
@@ -63,31 +64,35 @@ def runGame():
     # Create Game Over Screen
     gameOverScreen = createGameOverScreen(GAMEOVER_IMG)
     
-    numObstacles = 0
-    
-    # Tree obstacle
+    # Createstructure to hold types of obstacles
     Obstacles = []
-    obstacle = createNewObstacle('tree', TREE_IMG, TREEHEIGHT, CENTER_RAIL)
-    Obstacles.append(obstacle)
+    Obstacles.append("") # indexing for this structure starts at 1
+    treeobj = { 'type' : 'tree',
+                'image' : TREE_IMG}
+    Obstacles.append(treeobj)
+    numObstacles = 1
 
+    # Structure to hold the current obstacles on the field
+    obstaclesOnField = []
+    numObstaclesOnField = 0
+
+    # Structure to hold the player health UI
     Hearts = []
     Hearts.append(ZEROHEARTS_IMG)
     Hearts.append(ONEHEART_IMG)
     Hearts.append(TWOHEARTS_IMG)
     Hearts.append(THREEHEARTS_IMG)
 
-    obstaclesOnField = []
-    # DEBUG
-    obstaclesOnField.append(Obstacles[0])
-    
     # Initialize player movement vars used in main game loop
     moveLeft = False
     moveRight = False
         
     ##### Main Game Loop #####
 
+    # Initialize game-related incrementers
     railtick = 1
     obstacletick = 1
+    obstgentick = 1
     gameOverStartTime = 0
     
     while True:
@@ -105,10 +110,10 @@ def runGame():
                                                         HEARTSWIDTH,
                                                         HEARTSHEIGHT) ))
         # Display obstacles on field
-        for obstacle in Obstacles:
-                DISPLAYSURF.blit(obstacle['image'], obstacle['rect'])
+        for obst in obstaclesOnField:
+            DISPLAYSURF.blit(obst['image'], obst['rect'])
 
-	# Display player object
+        # Display player object
         DISPLAYSURF.blit(player['surface'], pygame.Rect( (player['x'], player['y'],
                                                           player['width'], player['height']) ))
         
@@ -120,23 +125,16 @@ def runGame():
                 terminate()
 
         # Collision detector
-        if obstacle['x'] == player['x'] and (obstacle['y'] + obstacle['height']) == player['y']:
-            player['health'] -= 1
+        if numObstaclesOnField > 0:
+            for obstacle in obstaclesOnField:
+                if obstacle['x'] == player['x'] and (obstacle['y'] +
+                                                 obstacle['height']) == player['y']:
+                    player['health'] -= 1
 
         # Determine if game over condition is reached, set gameOverStartTime
         # to current time
         if player['health'] == 0 and gameOverStartTime == 0:
             gameOverStartTime = time.time()
-                
-        # Move obstacle on field
-        if obstacletick == OBSTACLECHANGE:
-            for obstacle in obstaclesOnField:
-                obstacle['y'] += 1
-                obstacle['rect'] = pygame.Rect( (obstacle['x'],
-                                                 obstacle['y'],
-                                                 obstacle['width'],
-                                                 obstacle['height']) )
-            obstacletick = 0 # reset the clock on moving obstacles
 
         # Load next rail image for animated effect
         if railtick == RAILCHANGE:
@@ -149,7 +147,38 @@ def runGame():
             
             for rail in rails:
                 rail['image'] = pygame.image.load(RAILIMAGES % railnumber)
-        
+
+	# Delete obstacles off the screen
+        i = 0
+        for obst in obstaclesOnField:
+            if obst['y'] > WINHEIGHT:
+                obstaclesOnField.pop(i)
+                numObstaclesOnField -= 1
+            print obst['y']
+            i += 1
+                
+        # Generate new obstacle
+        if numObstaclesOnField < MAX_OBST_ON_FIELD:
+            randobstgen = random.randint(MIN_OBST_GEN_TIME, MAX_OBST_GEN_TIME)
+            if randobstgen == obstgentick:
+                newobstacleobj = Obstacles[random.randint(1, numObstacles)]
+                newobstacle = createNewObstacle(newobstacleobj['type'],
+                                                newobstacleobj['image'])
+                obstaclesOnField.append(newobstacle)
+                numObstaclesOnField += 1
+                obstgentick = 1
+
+        # Move obstacle on field
+        if obstacletick == OBSTACLECHANGE:
+            for obstacle in obstaclesOnField:
+                obstacle['y'] += 1
+                obstacle['rect'] = pygame.Rect( (obstacle['x'],
+                                                 obstacle['y'],
+                                                 obstacle['width'],
+                                                 obstacle['height']) )
+            obstacletick = 0 # reset the clock on moving obstacles
+            
+
         ##### EVENT HANDLING LOOP #####
         
         for event in pygame.event.get():
@@ -172,7 +201,7 @@ def runGame():
                     else:
                         moveLeft = False
                         moveRight = False
-                # Catch invalid keypress
+                # Catch invalid keypress'
                 elif event.key in (K_UP, K_w, K_DOWN, K_s):
                     moveLeft = False
                     moveRight = False
@@ -187,6 +216,10 @@ def runGame():
         FPSCLOCK.tick(FPS)
 
         # Update clocks used by game
+        if obstgentick == FPS:
+            obstgentick = 1
+        else:
+            obstgentick += 1
         railtick += 1
         obstacletick += 1
             
