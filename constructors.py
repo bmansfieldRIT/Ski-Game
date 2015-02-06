@@ -43,14 +43,15 @@ def createGameOverScreen( image ):
                                     gameover['width'], gameover['height']) )
     return gameover
 
-def createNewObstacle( type, image, obstacle_height, loc ):
+def createNewObstacle( type, image ):
     if type == 'tree':
         obstacle = {}
         obstacle['image'] = image
         obstacle['width'] = TREEWIDTH
         obstacle['height'] = TREEHEIGHT
-        obstacle['x'] = loc + RAILWIDTH
-        obstacle['y'] = 0 - obstacle_height
+        loc = random.randint(0,2)
+        obstacle['x'] = RAILLOCATIONS[loc] + RAILWIDTH
+        obstacle['y'] = 0 - TREEHEIGHT
         obstacle['rect'] = pygame.Rect( (obstacle['x'], obstacle['y'],
-                                        obstacle['width'], obstacle['height']) )
-        return obstacle
+                                         obstacle['width'], obstacle['height']) )
+    return obstacle
