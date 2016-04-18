@@ -1,0 +1,42 @@
+  1/2/15
+Got 0.1 version working, main game loop is set up. Need to nail down rail
+locations. Need to make enemy sprites.
+
+  1/5/15
+Player Moves between 3 different locations, next to a rail at the same location.
+
+  1/6/15
+Rail now move, have a better understanding of how movement is simulated, and
+creating multiple sprites simulating movement. Now, I can add trees and moguls
+and other  'background' objects, which will complete the basic background and
+provide a framework for simulating obstacle movement. Then, I can implement a
+collision detection engine, and actually add game elements. This in turn leads
+to the creation of a UI to represent all these elements, and from then on, it's
+all visual upgrades and features.
+
+I'll probably provide one, two at most visual upgrades before I choose a style,
+then I can research how to implement these styles of animation/sprite art, and
+do a final redo of UI and game art.
+
+  1/11/15
+As I update the sprites, i’m finding some of my earlier design choices going awry.
+Most of the placements of sprites on the screen are based on pixels, and many are based relative to each other. I tried to make any change as painless as possible, but now all 
+my constants for pixel placement are tied to each other (Ex. PLAYERSTARTY, which describes the ‘y’ coordinate to place the player sprite, is set to WINHEIGHT - PLAYERHEIGHT, meaning the height of the window  minus the total height of the sprite. If I were to change the window size or the player size, the placement would still be correct.)
+
+  1/12/15
+Moving towards having an obstacle collision system, I implemented a ‘game over’ screen to display when the player has run out of health, and noticed something odd. Certain packages were not loading correctly, and most importantly for what I was working on, the font package for displaying text. After a little research, I found that there is not a 64 bit version of Pygame, and using it with 64 bit python can cause issues. Until that problem is fixed, I’ll implement some workarounds, perhaps create some custom screens in Aesprite to use. Could be the end result anyhow.
+
+  1/16/15
+Encountered my first major game-related bug. Under certain circumstances, if the player presses a button not need to play the game (in this case, the up or down keys), unexpected behavior can result. Namely, the player flies off the edge of the screen. This is my first real opportunity to do some real debugging with the project, where I must determine exactly what behavior is being produced, why, and how to fix it. Since I didn’t give any usefulness to the up and down keys, perhaps it can be fixed by a simple if-else catch in the event handling loop.
+Another problem I encountered was setting up the game over screen at the end of the game. Besides my previous troubles using the font package with Pygame, I needed a way to test the functionality of the game over screen even though I have yet to set up full game functionality yet, rather, there is no way to lose the game yet (technically, this may be the only version of the game where it is possible to win :). This was also a good introduction to setting up debug variables to test the screen.There has to be a better way of debugging my program. Maybe a data structure to keep debug variables, or maybe it starts with restructuring the code. It IS  getting a tad messy now. If I can figure out how to separate the code into multiple files, It would go a long way towards making the code easier to use.
+
+  1/17/15
+Today I separated out the code into multiple files, in an attempt to clean up the code base. My approach was to first separate out the constants into game_constants.py, because they were so essential to the operation of the actual code. They are now more properly formatted and more thoroughly commented explaining their purpose. Because of their extreme importance, I further separated the constants used in initializing the game window into another file window_constants.py, and also because of their tight coupling to the game constants, they should generally be avoided. Because of their general uniformity, I separated the constructors for most of the objects into a separate file, constructors.py. This just helps to clean up the main game file, and shorten the amount of code per window. 
+
+  1/18/15
+Managed to optimize several bits of my code, removing some bits that were called unnecessarily, and reorganized the code into more intuitive sections with proper commenting. Since the beginning of the project, i’ve learned more about how code for this type of game, and using this type of language, needs to be formatted. I’ve made several design decisions since starting the project,  and I’ve decided that every image should be displayed in the game loop first, and then any changes to the state of objects within the game should be calculated. In respecting this design, I feel I can maintain the clean code i’ve worked hard to clean up just recently.
+
+  2/6/15
+Warning: Incoming self-congratulatory text ahead.
+The game is complete! Well, better to say, it works! This is where I would attach the label “Minimum Viable Product” that’s been rolling around in my head the last couple of months. This is the point where everything is in place to make this just barely a ‘game’. The base requirements of the description of the game have been fulfilled. Obstacles appear on screen, the player must move around to avoid them, and if your life goes to zero, the game is over. This program has a purpose now, and it’s a very fulfilling feeling. I’ve made a game, and basic as it is, with graphics and everything, and the best part is, I know exactly how it works. Down to the last random variable generator, I have complete knowledge of how this game functions. I’ve done games before, mostly puzzles, the closest program i’ve written that compares to this is the dungeon crawler I wrote in Java, and that had no graphics to speak of. This is an out-and-out GAME, and I’ve not only done something a large majority of the world has never done, but I have in my hands a completely unique and original GUI, written and designed by hand. I can think up an idea, learn a language/engine, and commit my ideas to code. It is a wonderful feeling, and my heart fills with joy looking forward to implementing all the REST of the ideas I have for this game, and even other games now.
+Speaking of which, now the realistic dev entry I was supposed to write. There are problems. The code has gotten messier, the last stretch of coding to get the game finished left me with some…less than desirable functions and data structures. I think the general design of the codebase is still stable and maintainable, just that some order must be restablished into the code to keep it manageable. The random obstacle generator, for instance, is VERY crude, without a doubt the most confusing/enigmatic section of the entire game. It needs an overhaul, my worry is that it may be so closely bound to the actual FPS of the game, that it can’t be improved without gutting the project and starting that section over again. Hopefully not, but I am starting to believe that’s the mantra of the programmer.

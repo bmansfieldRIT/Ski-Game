@@ -1,0 +1,6 @@
+1/2/15
+Got 0.1 version working, main game loop is set up. Need to nail down rail
+locations. Need to make enemy sprites.
+
+1/5/15
+Player Moves between 3 different locations, next to a rail at the same location.
