@@ -1,0 +1,78 @@
+  1/2/15
+Got 0.1 version working, main game loop is set up. Need to nail down rail
+locations. Need to make enemy sprites.
+
+  1/5/15
+Player Moves between 3 different locations, next to a rail at the same location.
+
+  1/6/15
+Rail now move, have a better understanding of how movement is simulated, and
+creating multiple sprites simulating movement. Now, I can add trees and moguls
+and other  'background' objects, which will complete the basic background and
+provide a framework for simulating obstacle movement. Then, I can implement a
+collision detection engine, and actually add game elements. This in turn leads
+to the creation of a UI to represent all these elements, and from then on, it's
+all visual upgrades and features.
+
+I'll probably provide one, two at most visual upgrades before I choose a style,
+then I can research how to implement these styles of animation/sprite art, and
+do a final redo of UI and game art.
+
+  1/11/15
+As I update the sprites, i’m finding some of my earlier design choices going awry.
+Most of the placements of sprites on the screen are based on pixels, and many are 
+based relative to each other. I tried to make any change as painless as possible, 
+but now all my constants for pixel placement are tied to each other (Ex. PLAYERSTARTY, 
+which describes the ‘y’ coordinate to place the player sprite, is set to WINHEIGHT - PLAYERHEIGHT, 
+meaning the height of the window  minus the total height of the sprite. If I were to 
+change the window size or the player size, the placement would still be correct.)
+
+  1/12/15
+Moving towards having an obstacle collision system, I implemented a ‘game over’ screen 
+to display when the player has run out of health, and noticed something odd. Certain 
+packages were not loading correctly, and most importantly for what I was working on, 
+the font package for displaying text. After a little research, I found that there is 
+not a 64 bit version of Pygame, and using it with 64 bit python can cause issues. 
+Until that problem is fixed, I’ll implement some workarounds, perhaps create some 
+custom screens in Aesprite to use. Could be the end result anyhow.
+
+  1/16/15
+Encountered my first major game-related bug. Under certain circumstances, if the 
+player presses a button not need to play the game (in this case, the up or down keys), 
+unexpected behavior can result. Namely, the player flies off the edge of the screen. 
+This is my first real opportunity to do some real debugging with the project, where 
+I must determine exactly what behavior is being produced, why, and how to fix it. 
+Since I didn’t give any usefulness to the up and down keys, perhaps it can be fixed 
+by a simple if-else catch in the event handling loop.
+Another problem I encountered was setting up the game over screen at the end of the 
+game. Besides my previous troubles using the font package with Pygame, I needed a way 
+to test the functionality of the game over screen even though I have yet to set up 
+full game functionality yet, rather, there is no way to lose the game yet (technically, 
+this may be the only version of the game where it is possible to win :). This was also a 
+good introduction to setting up debug variables to test the screen.There has to be a
+better way of debugging my program. Maybe a data structure to keep debug variables, 
+or maybe it starts with restructuring the code. It IS  getting a tad messy now. If I 
+can figure out how to separate the code into multiple files, It would go a long way 
+towards making the code easier to use.
+
+  1/17/15
+Today I separated out the code into multiple files, in an attempt to clean up the 
+code base. My approach was to first separate out the constants into game_constants.py, 
+because they were so essential to the operation of the actual code. They are now more 
+properly formatted and more thoroughly commented explaining their purpose. Because 
+of their extreme importance, I further separated the constants used in initializing 
+the game window into another file window_constants.py, and also because of their 
+tight coupling to the game constants, they should generally be avoided. Because 
+of their general uniformity, I separated the constructors for most of the objects 
+into a separate file, constructors.py. This just helps to clean up the main game 
+file, and shorten the amount of code per window. 
+
+  1/18/15
+Managed to optimize several bits of my code, removing some bits that were called 
+unnecessarily, and reorganized the code into more intuitive sections with proper 
+commenting. Since the beginning of the project, i’ve learned more about how code 
+for this type of game, and using this type of language, needs to be formatted. 
+I’ve made several design decisions since starting the project,  and I’ve decided 
+that every image should be displayed in the game loop first, and then any changes 
+to the state of objects within the game should be calculated. In respecting this 
+design, I feel I can maintain the clean code i’ve worked hard to clean up just recently.
