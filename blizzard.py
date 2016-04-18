@@ -13,10 +13,12 @@ from constructors import *
 def main():
     global FPSCLOCK, DISPLAYSURF
 
+
     pygame.init()
     FPSCLOCK = pygame.time.Clock()
     DISPLAYSURF = pygame.display.set_mode((WINWIDTH, WINHEIGHT))
     pygame.display.set_caption('BLIZZARD!')
+
     
     while True:
         runGame()
