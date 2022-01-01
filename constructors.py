@@ -7,8 +7,9 @@ new objects.
 
 import pygame, sys, time, math, random
 from pygame.locals import *
-from window_constants import *
+
 from game_constants import *
+from window_constants import *
 
 def createNewRail( loc, image ):
     newrail = {}
@@ -65,6 +66,6 @@ def createNewObstacle( type, image ):
         obstacle['y'] = 0 - SNOWPILEHEIGHT
         obstacle['rect'] = pygame.Rect( (obstacle['x'], obstacle['y'],
                                          obstacle['width'], obstacle['height']) )
-        print 'snow'
+        print ('snow')
     
     return obstacle
