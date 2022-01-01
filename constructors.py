@@ -8,14 +8,14 @@ new objects.
 import pygame, sys, time, math, random
 from pygame.locals import *
 
-from game_constants import *
+import game_constants
 from window_constants import *
 
 def createNewRail( loc, image ):
     newrail = {}
     newrail['image'] = image
-    newrail['width'] = RAILWIDTH
-    newrail['height'] = RAILHEIGHT
+    newrail['width'] = game_constants.RAILWIDTH
+    newrail['height'] = game_constants.RAILHEIGHT
     newrail['x'] = loc
     newrail['y'] = 0
     newrail['rect'] = pygame.Rect( (newrail['x'], newrail['y'],
@@ -25,8 +25,8 @@ def createNewRail( loc, image ):
 def createNewTreeline( treeimage, xcoord ):
     newtr = {}
     newtr['image'] = treeimage
-    newtr['width'] = TREELINEWIDTH
-    newtr['height'] = TREELINEHEIGHT
+    newtr['width'] = game_constants.TREELINEWIDTH
+    newtr['height'] = game_constants.TREELINEHEIGHT
     newtr['x'] = xcoord
     newtr['y'] = 0
     newtr['rect'] = pygame.Rect( (newtr['x'], newtr['y'],
@@ -48,22 +48,22 @@ def createNewObstacle( type, image ):
     if type == 'tree':
         obstacle = {}
         obstacle['image'] = image
-        obstacle['width'] = TREEWIDTH
-        obstacle['height'] = TREEHEIGHT
+        obstacle['width'] = game_constants.TREEWIDTH
+        obstacle['height'] = game_constants.TREEHEIGHT
         loc = random.randint(0,2)
-        obstacle['x'] = RAILLOCATIONS[loc] + RAILWIDTH
-        obstacle['y'] = 0 - TREEHEIGHT
+        obstacle['x'] = game_constants.RAILLOCATIONS[loc] + game_constants.RAILWIDTH
+        obstacle['y'] = 0 - game_constants.TREEHEIGHT
         obstacle['rect'] = pygame.Rect( (obstacle['x'], obstacle['y'],
                                          obstacle['width'], obstacle['height']) )
 
     elif type == 'snow pile':
         obstacle = {}
         obstacle['image'] = image
-        obstacle['width'] = SNOWPILEWIDTH
-        obstacle['height'] = SNOWPILEHEIGHT
+        obstacle['width'] = game_constants.SNOWPILEWIDTH
+        obstacle['height'] = game_constants.SNOWPILEHEIGHT
         loc = random.randint(0,2)
-        obstacle['x'] = RAILLOCATIONS[loc] + RAILWIDTH
-        obstacle['y'] = 0 - SNOWPILEHEIGHT
+        obstacle['x'] = game_constants.RAILLOCATIONS[loc] + game_constants.RAILWIDTH
+        obstacle['y'] = 0 - game_constants.SNOWPILEHEIGHT
         obstacle['rect'] = pygame.Rect( (obstacle['x'], obstacle['y'],
                                          obstacle['width'], obstacle['height']) )
         print ('snow')
