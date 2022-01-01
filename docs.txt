@@ -10,4 +10,4 @@ To install pygame, I had to:
 Aesprite v1.0.8 Copyright 2001-2014 David Capello
 Emacs Version 24.4 (9.0) Copyright 2014 Free Software Foundation
 Python version 3.4.2 Copyright 2001-2014 Python Software Foundation
-Pygame Version 1.9.1 release Distributed under GNU LGPL version 2.1, Python Game Development
+Pygame Version 2.1.2 release Distributed under GNU LGPL version 2.1, Python Game Development

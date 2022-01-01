@@ -76,3 +76,16 @@ I’ve made several design decisions since starting the project,  and I’ve dec
 that every image should be displayed in the game loop first, and then any changes 
 to the state of objects within the game should be calculated. In respecting this 
 design, I feel I can maintain the clean code i’ve worked hard to clean up just recently.
+
+  12/31/21
+Updated Pygame to latest version, version 2. Fixed a problem with the overwritten
+game constants file. Fixed a couple of python 2->3 bugs, and was able to get the
+game running. Next todos:
+- refactor the constructors to be inside sprite classes instead, and call those class
+constructors.
+- Find a suitable spite maker on ipad, so I can utilize the pen, not deal with lag.
+- Animate the rail sprite
+- Try my hand at animating a more complex sprite. Probably the skiman, he needs a
+redo anyways.
+- Find the perfect game speed for a more arcade-y feel
+- create some coins to collect, add a score counter
